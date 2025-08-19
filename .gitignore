@@ -1,0 +1,7 @@
+# filepath: d:\flask01\.gitignore
+venv/
+__pycache__/
+*.pyc
+*.db
+instance/
+.env

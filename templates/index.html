@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask01 ToDo List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h1>ToDo List</h1>
+            <div>
+                <span style="color:#2d5be3;font-weight:600;">{{ current_user.username }}</span>
+                <a href="{{ url_for('logout') }}" class="btn" style="padding:6px 16px;font-size:0.95em;background:#e32d2d;">Logout</a>
+            </div>
+        </div>
+        <form action="{{ url_for('add') }}" method="POST" class="todo-form">
+            <input type="text" name="content" placeholder="Add a new task..." required>
+            <button type="submit" class="btn">Add</button>
+        </form>
+        <ul class="todo-list">
+            {% for task in tasks %}
+            <li>
+                <span class="task-content">{{ task.content }}</span>
+                <span class="task-date">{{ task.date.strftime('%Y-%m-%d %H:%M') }}</span>
+                <a href="{{ url_for('edit', id=task.id) }}" class="icon-btn edit-btn" title="Edit">&#9998;</a>
+                <a href="{{ url_for('delete', id=task.id) }}" class="icon-btn delete-btn" title="Delete">&#10006;</a>
+            </li>
+            {% else %}
+            <li class="empty">No tasks yet. Add your first one!</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
