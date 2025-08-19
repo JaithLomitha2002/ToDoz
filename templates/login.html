@@ -14,7 +14,7 @@
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" class="btn">Login</button>
         </form>
-        <p>Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+        <p>Don't have an account? <a href="{{ url_for('login.register') }}">Register</a></p>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <div class="flash">{{ messages[0] }}</div>
