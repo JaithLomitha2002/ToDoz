@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ project.name }} - Project Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+<div class="container">
+    <a href="{{ url_for('project.projects') }}" class="btn" style="margin-bottom:16px;">&larr; Back to Projects</a>
+    <h1>{{ project.name }}</h1>
+    <p>Manager: {{ project.manager.username }}</p>
+    <p>Created: {{ project.created_at.strftime('%Y-%m-%d') }}</p>
+    <h2>Members</h2>
+    <ul>
+        {% for member in project.members %}
+            {% if member.status == 'accepted' %}
+                <li>{{ member.user.username }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% if current_user.id == project.manager_id %}
+    <form method="POST" action="{{ url_for('project.invite_member', project_id=project.id) }}">
+        <input type="text" name="username" placeholder="Invite by username" required>
+        <button type="submit" class="btn">Invite</button>
+    </form>
+    {% endif %}
+    <h2>Invitations</h2>
+    <ul>
+        {% for inv in invitations %}
+            <li>
+                {{ inv.user.username }} - {{ inv.status }}
+                {% if inv.user_id == current_user.id and inv.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('project.handle_invitation', inv_id=inv.id, action='accept') }}" style="display:inline;">
+                        <button type="submit" class="btn">Accept</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('project.handle_invitation', inv_id=inv.id, action='reject') }}" style="display:inline;">
+                        <button type="submit" class="btn">Reject</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <h2>Tasks</h2>
+    <ul>
+        {% for task in project.tasks %}
+            <li>
+                <strong>{{ task.name }}</strong> ({{ task.status }}, Priority: {{ task.priority }})
+                <br>End Date: {{ task.end_date.strftime('%Y-%m-%d') if task.end_date else 'N/A' }}
+                <br>Progress: <progress value="{{ task.progress }}" max="100"></progress> {{ task.progress }}%
+                <br>Assignees:
+                <ul>
+                    {% for assignee in task.assignees %}
+                        <li>{{ assignee.user.username }}
+                            {% if current_user.id == project.manager_id %}
+                                <form method="POST" action="{{ url_for('task.remove_assignee', task_id=task.id, user_id=assignee.user.id) }}" style="display:inline;">
+                                    <button type="submit" class="btn">Remove</button>
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if current_user.id == project.manager_id %}
+                    <form method="POST" action="{{ url_for('task.assign_task', task_id=task.id) }}">
+                        <input type="text" name="username" placeholder="Assign by username" required>
+                        <button type="submit" class="btn">Assign</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('task.delete_task', task_id=task.id) }}">
+                        <button type="submit" class="btn">Delete Task</button>
+                    </form>
+                {% endif %}
+                {% for assignee in task.assignees %}
+                    {% if assignee.user_id == current_user.id %}
+                        <form method="POST" action="{{ url_for('task.update_progress', task_id=task.id) }}">
+                            <input type="number" name="progress" min="0" max="100" value="{{ task.progress }}">
+                            <button type="submit" class="btn">Update Progress</button>
+                        </form>
+                    {% endif %}
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if current_user.id == project.manager_id %}
+    <h3>Add Task</h3>
+    <form method="POST" action="{{ url_for('task.create_task', project_id=project.id) }}">
+        <input type="text" name="name" placeholder="Task name" required>
+        <input type="date" name="end_date">
+        <select name="priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
+        <button type="submit" class="btn">Add Task</button>
+    </form>
+    {% endif %}
+</div>
+</body>
+</html>

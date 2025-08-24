@@ -5,7 +5,7 @@ from datetime import datetime
 
 crud_bp = Blueprint("crud", __name__)
 
-@crud_bp.route("/", methods=["GET"])
+@crud_bp.route("/todos", methods=["GET"])
 @login_required
 def home():
     tasks = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.desc()).all()
