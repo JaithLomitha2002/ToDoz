@@ -8,7 +8,7 @@ from controllers.project_controller import project_bp
 from controllers.task_controller import task_bp 
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, instance_path="/tmp")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///:memory:")
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "your_secret_key_here")
 db.init_app(app)
