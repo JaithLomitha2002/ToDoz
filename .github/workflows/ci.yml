@@ -1,4 +1,4 @@
-name: CI
+name: Python CI
 
 on:
   push:
@@ -7,8 +7,11 @@ on:
     branches: [ main, development ]
 
 jobs:
-  test:
+  build_and_test:
     runs-on: ubuntu-latest
+    
+    # Optional: You can specify a Docker container to ensure a consistent environment
+    # container: python:3.11-slim
 
     steps:
     - name: Checkout code
@@ -18,13 +21,32 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install pytest
 
-    - name: Run tests
+    - name: Install test dependencies
+      run: |
+        pip install pytest flake8 bandit
+
+    - name: Run code linting
+      run: |
+        flake8 .
+
+    - name: Run security checks
+      run: |
+        bandit -r .
+
+    - name: Run unit tests
       run: |
         pytest tests/
