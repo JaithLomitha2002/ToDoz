@@ -22,7 +22,7 @@ def test_register_login_logout(client):
 
     # Login
     response = client.post("/login", data={"username": "testuser", "password": "testpass"}, follow_redirects=True)
-    assert b"ToDo List" in response.data
+    assert b"Your Projects" in response.data
 
     # Logout
     response = client.get("/logout", follow_redirects=True)

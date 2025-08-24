@@ -29,7 +29,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for("crud.home"))
+            return redirect(url_for("project.projects"))
         else:
             flash("Invalid username or password.")
     return render_template("login.html")

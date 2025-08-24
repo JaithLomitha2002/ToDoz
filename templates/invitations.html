@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Invitations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <style>
+        .sidebar {
+            width: 180px;
+            background: #f3f8ff;
+            border-radius: 12px;
+            padding: 24px 0;
+            box-shadow: 0 2px 8px rgba(45,91,227,0.05);
+            position: absolute;
+            left: 40px;
+            top: 40px;
+            min-height: 400px;
+        }
+        .sidebar a {
+            display: block;
+            color: #2d5be3;
+            text-decoration: none;
+            padding: 12px 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .sidebar a.active, .sidebar a:hover {
+            background: #e3f2fd;
+        }
+        .main-content {
+            margin-left: 220px;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <a href="{{ url_for('project.projects') }}">Projects</a>
+    <a href="{{ url_for('project.invitations') }}" class="active">Invitations</a>
+    <a href="{{ url_for('login.logout') }}" style="color:#e32d2d;">Logout</a>
+</div>
+<div class="container main-content">
+    <h1>Project Invitations</h1>
+    <ul>
+        {% for inv in invitations %}
+            <li class="invitation-pending">
+                <strong>{{ inv.project.name }}</strong> invited by <b>{{ inv.project.manager.username }}</b>
+                <br>Status: {{ inv.status }}
+                {% if inv.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('project.handle_invitation', inv_id=inv.id, action='accept') }}" style="display:inline;">
+                        <button type="submit" class="btn">Accept</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('project.handle_invitation', inv_id=inv.id, action='reject') }}" style="display:inline;">
+                        <button type="submit" class="btn">Reject</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% else %}
+            <li>No invitations at the moment.</li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
