@@ -6,6 +6,7 @@ from controllers.login_controller import login_bp
 from controllers.crud_controller import crud_bp
 from controllers.project_controller import project_bp
 from controllers.task_controller import task_bp 
+import os
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
@@ -24,4 +25,5 @@ app.register_blueprint(project_bp)
 app.register_blueprint(task_bp)  
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
