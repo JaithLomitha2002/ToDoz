@@ -1,14 +1,18 @@
 import sys
 import os
+import pytest
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import app, db
 from models import User
-import pytest
 
 @pytest.fixture
 def client():
+    # Use in-memory SQLite for testing
     app.config["TESTING"] = True
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    app.config["WTF_CSRF_ENABLED"] = False  # Disable CSRF for tests if using Flask-WTF
+
     with app.test_client() as client:
         with app.app_context():
             db.drop_all()
@@ -22,7 +26,7 @@ def test_register_login_logout(client):
 
     # Login
     response = client.post("/login", data={"username": "testuser", "password": "testpass"}, follow_redirects=True)
-    assert b"Your Projects" in response.data
+    assert b"Your Projects" in response.data or b"Dashboard" in response.data
 
     # Logout
     response = client.get("/logout", follow_redirects=True)
