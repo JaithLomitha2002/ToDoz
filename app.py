@@ -7,11 +7,16 @@ from controllers.crud_controller import crud_bp
 from controllers.project_controller import project_bp
 from controllers.task_controller import task_bp
 import os
+from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///test.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "SQLALCHEMY_DATABASE_URI",
+    "postgresql://postgres:mycoc1@localhost:5432/todoz"
+)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "your_secret_key_here")
 db.init_app(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = "login.login"
 
